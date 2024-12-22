@@ -58,8 +58,6 @@ cargo build --release
 
 ## Rust Library Usage:
 ```rust
-use delink;
-
 // Read in the contents of an encrypted firmware image
 match std::fs::read("DIR850LB1_FW220WWb03.bin") {
     Err(e) => {
