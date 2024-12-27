@@ -1,4 +1,4 @@
-use crate::aes::aes_256_cbc_decrypt;
+use crate::aes::aes_256_cbc_decrypt_unpadded;
 use crate::common::DecryptError;
 use log::debug;
 
@@ -21,7 +21,7 @@ pub fn decrypt(encrypted_data: &[u8]) -> Result<Vec<u8>, DecryptError> {
             // Get the actual encrypted data
             if let Some(cipher_data) = encrypted_data.get(CIPHER_DATA_START..) {
                 // Decrypt the encrypted data
-                match aes_256_cbc_decrypt(cipher_data, AES_KEY, IV) {
+                match aes_256_cbc_decrypt_unpadded(cipher_data, AES_KEY, IV) {
                     Err(e) => {
                         debug!("Decrypt error: {}", e);
                         Err(DecryptError::Decrypt)

@@ -1,4 +1,4 @@
-use crate::aes::aes_256_cbc_decrypt;
+use crate::aes::aes_256_cbc_decrypt_unpadded;
 use crate::common::DecryptError;
 use log::{debug, warn};
 
@@ -103,7 +103,7 @@ pub fn decrypt(encrypted_image: &[u8]) -> Result<Vec<u8>, DecryptError> {
             for crypto in keygen(&image_sign) {
                 // Decrypt the encrypted data
                 if let Ok(decrypted_data) =
-                    aes_256_cbc_decrypt(encrypted_data, &crypto.key, &crypto.iv)
+                    aes_256_cbc_decrypt_unpadded(encrypted_data, &crypto.key, &crypto.iv)
                 {
                     // Verify the decrypted magic bytes
                     if let Some(decrypted_magic) = decrypted_data.get(0..MAGIC_LEN) {

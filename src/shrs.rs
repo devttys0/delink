@@ -1,4 +1,4 @@
-use crate::aes::aes_128_cbc_decrypt;
+use crate::aes::aes_128_cbc_decrypt_unpadded;
 use crate::common::DecryptError;
 use log::debug;
 
@@ -45,7 +45,7 @@ pub fn decrypt(encrypted_data: &[u8]) -> Result<Vec<u8>, DecryptError> {
                         encrypted_data.get(encrypted_data_start..encrypted_data_end)
                     {
                         // Decrypt the encrypted data
-                        if let Ok(decrypted_data) = aes_128_cbc_decrypt(cipher_data, AES_KEY, iv) {
+                        if let Ok(decrypted_data) = aes_128_cbc_decrypt_unpadded(cipher_data, AES_KEY, iv) {
                             // Validate the magic bytes of the decrypted data
                             if let Some(decrypted_magic) =
                                 decrypted_data.get(MAGIC_START..DECRYPTED_MAGIC.len())
