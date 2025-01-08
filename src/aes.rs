@@ -1,15 +1,12 @@
-use aes::cipher::{
-    block_padding::Pkcs7, BlockCipher, BlockDecrypt, BlockDecryptMut, KeyIvInit,
-};
-use log::warn;
 use crate::common::DecryptError;
+use aes::cipher::{block_padding::Pkcs7, BlockCipher, BlockDecrypt, BlockDecryptMut, KeyIvInit};
+use log::warn;
 
 pub enum AesKeySize {
     AES128 = 16,
     _AES192 = 24,
     AES256 = 32,
 }
-
 
 /// Supported AES variants for decryption
 #[derive(Debug)]
@@ -32,7 +29,8 @@ impl AesVariant {
     /// Creates a new AES variant with the specified key size
     fn new(key: &[u8], iv: &[u8], key_size: AesKeySize) -> Result<Self, DecryptError> {
         let key_size = key_size as usize;
-        let cropped_key = key.get(..key_size)
+        let cropped_key = key
+            .get(..key_size)
             .ok_or(DecryptError::InvalidKeySize(key.len()))?;
 
         match key_size {
@@ -87,7 +85,11 @@ impl AesVariant {
     }
 
     /// Decrypts data using the appropriate method based on padding mode
-    fn decrypt(&self, encrypted_data: &[u8], padding: AesPaddingMode) -> Result<Vec<u8>, DecryptError> {
+    fn decrypt(
+        &self,
+        encrypted_data: &[u8],
+        padding: AesPaddingMode,
+    ) -> Result<Vec<u8>, DecryptError> {
         match (self, padding) {
             (AesVariant::Aes128(decryptor), AesPaddingMode::NoPadding) => {
                 Self::decrypt_unpadded(decryptor.clone(), encrypted_data)
@@ -141,7 +143,13 @@ pub fn aes_128_cbc_decrypt(
     key: &[u8],
     iv: &[u8],
 ) -> Result<Vec<u8>, DecryptError> {
-    aes_cbc_decrypt(encrypted_data, key, iv, AesKeySize::AES128, AesPaddingMode::WithPadding)
+    aes_cbc_decrypt(
+        encrypted_data,
+        key,
+        iv,
+        AesKeySize::AES128,
+        AesPaddingMode::WithPadding,
+    )
 }
 
 /// Convenience function for AES-128-CBC decryption without padding
@@ -150,7 +158,13 @@ pub fn aes_128_cbc_decrypt_unpadded(
     key: &[u8],
     iv: &[u8],
 ) -> Result<Vec<u8>, DecryptError> {
-    aes_cbc_decrypt(encrypted_data, key, iv, AesKeySize::AES128, AesPaddingMode::NoPadding)
+    aes_cbc_decrypt(
+        encrypted_data,
+        key,
+        iv,
+        AesKeySize::AES128,
+        AesPaddingMode::NoPadding,
+    )
 }
 
 /// Convenience function for AES-192-CBC decryption with padding
@@ -159,7 +173,13 @@ pub fn _aes_192_cbc_decrypt(
     key: &[u8],
     iv: &[u8],
 ) -> Result<Vec<u8>, DecryptError> {
-    aes_cbc_decrypt(encrypted_data, key, iv, AesKeySize::_AES192, AesPaddingMode::WithPadding)
+    aes_cbc_decrypt(
+        encrypted_data,
+        key,
+        iv,
+        AesKeySize::_AES192,
+        AesPaddingMode::WithPadding,
+    )
 }
 
 /// Convenience function for AES-192-CBC decryption without padding
@@ -168,9 +188,14 @@ pub fn _aes_192_cbc_decrypt_unpadded(
     key: &[u8],
     iv: &[u8],
 ) -> Result<Vec<u8>, DecryptError> {
-    aes_cbc_decrypt(encrypted_data, key, iv, AesKeySize::_AES192, AesPaddingMode::NoPadding)
+    aes_cbc_decrypt(
+        encrypted_data,
+        key,
+        iv,
+        AesKeySize::_AES192,
+        AesPaddingMode::NoPadding,
+    )
 }
-
 
 /// Convenience function for AES-256-CBC decryption with padding
 pub fn aes_256_cbc_decrypt(
@@ -178,10 +203,14 @@ pub fn aes_256_cbc_decrypt(
     key: &[u8],
     iv: &[u8],
 ) -> Result<Vec<u8>, DecryptError> {
-    aes_cbc_decrypt(encrypted_data, key, iv, AesKeySize::AES256, AesPaddingMode::WithPadding)
+    aes_cbc_decrypt(
+        encrypted_data,
+        key,
+        iv,
+        AesKeySize::AES256,
+        AesPaddingMode::WithPadding,
+    )
 }
-
-
 
 /// Convenience function for AES-256-CBC decryption without padding
 pub fn aes_256_cbc_decrypt_unpadded(
@@ -189,5 +218,11 @@ pub fn aes_256_cbc_decrypt_unpadded(
     key: &[u8],
     iv: &[u8],
 ) -> Result<Vec<u8>, DecryptError> {
-    aes_cbc_decrypt(encrypted_data, key, iv, AesKeySize::AES256, AesPaddingMode::NoPadding)
+    aes_cbc_decrypt(
+        encrypted_data,
+        key,
+        iv,
+        AesKeySize::AES256,
+        AesPaddingMode::NoPadding,
+    )
 }
