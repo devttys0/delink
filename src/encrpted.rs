@@ -4,6 +4,9 @@ use log::debug;
 
 /// Decrypts encrypted firmware that uses the 'encrpted_img' format, primarily the DIR-X series
 pub fn decrypt(encrypted_data: &[u8]) -> Result<Vec<u8>, DecryptError> {
+    // Encrypted data is broken up into blocks
+    const BLOCK_SIZE: usize = 131072;
+
     // Actual encrypted data starts at offset 16
     const CIPHER_DATA_START: usize = 16;
 
@@ -20,27 +23,34 @@ pub fn decrypt(encrypted_data: &[u8]) -> Result<Vec<u8>, DecryptError> {
         if enc_magic == ENCRYPTED_MAGIC_BYTES {
             // Get the actual encrypted data
             if let Some(cipher_data) = encrypted_data.get(CIPHER_DATA_START..) {
-                // Decrypt the encrypted data
-                match aes_256_cbc_decrypt_unpadded(cipher_data, AES_KEY, IV) {
-                    Err(e) => {
-                        debug!("Decrypt error: {}", e);
-                        Err(DecryptError::Decrypt)
-                    }
-                    Ok(decrypted_data) => {
-                        // Sanity check the decrypted data magic (expected to be a UBI image)
-                        if let Some(dec_magic) = decrypted_data.get(0..DECRYPTED_MAGIC_BYTES.len())
-                        {
-                            if dec_magic == DECRYPTED_MAGIC_BYTES {
-                                Ok(decrypted_data)
-                            } else {
-                                debug!("Decrypted magic bytes do not match");
-                                Err(DecryptError::Output)
-                            }
-                        } else {
-                            debug!("Decrypted data too small");
-                            Err(DecryptError::Output)
+                // Stores all decrypted blocks
+                let mut decrypted_data: Vec<u8> = Vec::new();
+
+                // Process each encrypted block
+                for encrypted_block in cipher_data.chunks(BLOCK_SIZE) {
+                    // Decrypt the encrypted block
+                    match aes_256_cbc_decrypt_unpadded(encrypted_block, AES_KEY, IV) {
+                        Err(e) => {
+                            debug!("Decrypt error: {}", e);
+                            return Err(DecryptError::Decrypt);
+                        }
+                        Ok(decrypted_block) => {
+                            decrypted_data.extend(decrypted_block);
                         }
                     }
+                }
+
+                // Sanity check the decrypted data magic (expected to be a UBI image)
+                if let Some(dec_magic) = decrypted_data.get(0..DECRYPTED_MAGIC_BYTES.len()) {
+                    if dec_magic == DECRYPTED_MAGIC_BYTES {
+                        Ok(decrypted_data)
+                    } else {
+                        debug!("Decrypted magic bytes do not match");
+                        Err(DecryptError::Output)
+                    }
+                } else {
+                    debug!("Decrypted data too small");
+                    Err(DecryptError::Output)
                 }
             } else {
                 debug!("Failed to read encrypted data");
