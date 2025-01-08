@@ -9,6 +9,10 @@ pub enum DecryptError {
     Input,
     #[error("invalid decrypted data")]
     Output,
+    #[error("Invalid key size: expected 16 or 32 bytes, got {0}")]
+    InvalidKeySize(usize),
+    #[error("Invalid input length")]
+    InvalidInputLength,
 }
 
 /// Each decryption function must conform to this type

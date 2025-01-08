@@ -120,7 +120,9 @@ pub fn decrypt(encrypted_data: &[u8]) -> Result<Vec<u8>, DecryptError> {
                                 encrypted_data.get(cipher_data_start..cipher_data_end)
                             {
                                 // Try to decrypt with known encryption keys
-                                for (password, name) in known_keys().iter() {
+                                let mut sorted_keys: Vec<_> = known_keys().into_iter().collect();
+                                sorted_keys.sort_by(|a, b| a.1.cmp(&b.1)); // Sorting by the 'name' (value)
+                                for (password, name) in sorted_keys.iter() {
                                     debug!("Trying {} decryption key", name);
 
                                     if let Ok(decrypted_data) = aes_128_cbc_decrypt(
