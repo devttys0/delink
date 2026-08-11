@@ -9,10 +9,14 @@ Confirmed to work on the following D-Link devices:
 * R12
 * R15
 * R18
+* R36
+* R95
 * M18
 * M30
 * M32
+* M36
 * M60
+* M95
 * DAP-1665
 * DAP-1820
 * DAP-1955
