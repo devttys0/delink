@@ -30,8 +30,7 @@ fn sha256_digest(data: &[u8]) -> Vec<u8> {
 
 /// Returns the MD5 hash of the provided data
 fn md5_digest(data: &[u8]) -> Vec<u8> {
-    // There has to be a cleaner way to do this, but it works...
-    hex::decode(format!("{:x}", md5::compute(data))).expect("Failed to decode MD5 hash")
+    md5::compute(data).to_vec()
 }
 
 /// Returns the request hash of the provided data
