@@ -75,6 +75,7 @@ pub mod encimg;
 pub mod encrpted;
 pub mod mh01;
 mod openssl;
+pub mod r95;
 pub mod sha1_hmac;
 pub mod shrs;
 pub mod tlv;

@@ -55,7 +55,7 @@ impl AesVariant {
         mut decryptor: cbc::Decryptor<C>,
         encrypted_data: &[u8],
     ) -> Result<Vec<u8>, DecryptError> {
-        if encrypted_data.len() % C::block_size() != 0 {
+        if !encrypted_data.len().is_multiple_of(C::block_size()) {
             return Err(DecryptError::InvalidInputLength);
         }
 

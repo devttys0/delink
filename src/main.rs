@@ -9,6 +9,7 @@ mod encimg;
 mod encrpted;
 mod mh01;
 mod openssl;
+mod r95;
 mod sha1_hmac;
 mod shrs;
 mod tlv;
