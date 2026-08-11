@@ -1,18 +1,5 @@
 use log::{error, info, trace};
 use thiserror::Error;
-mod aes;
-mod common;
-mod dap1610;
-mod decryptor;
-mod dlk;
-mod encimg;
-mod encrpted;
-mod mh01;
-mod openssl;
-mod r95;
-mod sha1_hmac;
-mod shrs;
-mod tlv;
 
 #[derive(Error, Debug)]
 pub enum ApplicationError {
@@ -53,7 +40,7 @@ fn main() -> Result<(), ApplicationError> {
                 trace!("Attempting to decrypt data from: {}", input_file_name);
 
                 // Try all decryption methods
-                if let Ok(decrypted_data) = decryptor::decrypt(&file_data) {
+                if let Ok(decrypted_data) = delink::decrypt(&file_data) {
                     info!("Decryption successful!");
                     if write_decrypted_data(&output_file_name, &decrypted_data) {
                         Ok(())
