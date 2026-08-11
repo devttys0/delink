@@ -25,7 +25,10 @@ struct OpenSSLCryptInfo {
 /// Returns the SHA256 hash of the provided data
 fn sha256_digest(data: &[u8]) -> Vec<u8> {
     // This *should* never fail
-    hex::decode(sha256::digest(data)).expect("Failed to decode SHA256 hash")
+    use sha2::{Digest, Sha256};
+    let mut hasher = Sha256::new();
+    hasher.update(data);
+    hasher.finalize().to_vec()
 }
 
 /// Returns the MD5 hash of the provided data
